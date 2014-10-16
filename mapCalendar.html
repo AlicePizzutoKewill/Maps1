@@ -1,0 +1,586 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Script-Type" content="text/javascript;charset=UTF-8" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
+    <meta charset="utf-8"/>
+    <title>Ride history</title>
+    <style type="text/css">
+      html, body, #map-canvas {
+        height: 80%;
+        width:80%;
+        margin: 0px;
+        padding: 0px
+      }
+        body
+        {
+            position: absolute;
+            z-index: 0;
+        }
+        div#Cal
+        {
+            position: absolute;
+            left: 10px;
+            top: 30px;
+            display: none;
+            background-color: Silver;
+            border: 2px solid black;
+            z-index: 2;
+        }
+        tr.calHead
+        {
+            width: 60px;
+            font-weight: bold;
+            background-color: Silver;
+            margin: 0px;
+            border-width: 0px;
+        }
+        .cssTown
+        {
+            background-color: #d0ffd0;
+            font-family: Verdana,Sans-serif;
+            font-style: italic;
+            font-size: 1.1em;
+        }
+    </style>
+
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false" >
+    </script>
+
+<script type="text/javascript" >
+function showTestMap(fileName)
+{
+  var nashua = new google.maps.LatLng(42.6957229524851, -71.5611227788031);
+  var mapOptions = {
+    zoom: 1,
+    center: nashua,
+    mapTypeId: google.maps.MapTypeId.HYBRID        //ROADMAP, SATELLITE, HYBRID, TERRAIN
+  }
+  var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+
+//  map.setTilt(45);
+  var ctaLayer = new google.maps.KmlLayer({
+    url:'http://www.alicefrank.com/MapFiles/' + fileName
+//    url:'http://sandbox1.alicefrank.com/MapFiles/2014_5_18.kml'
+  });
+  ctaLayer.setMap(map);
+}
+    </script>
+</head>
+<body onload="showCurrentMonth()">
+    <hr />
+    <center>
+        <h2>
+        <a href="http://sandbox1.alicefrank.com/index.php?option=com_content&view=article&id=19&Itemid=26">
+            Alice's mileage</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="http://sandbox1.alicefrank.com/index.php?option=com_content&view=article&id=18&Itemid=22">
+                Frank's mileage</a>
+    </center>
+    <br />
+    <hr />
+    <table>
+        <tr>
+            <td>
+                <table border="3" summary="x">
+                    <tr class="calHead" align="center">
+                        <td>
+                            <button type="button" onclick="showPrevYear('xyz')">
+                                &lt;==</button>
+                        </td>
+                        <td>
+                            <button type="button" onclick="showPrevMonth('xyz')">
+                                &lt;=</button>
+                        </td>
+                        <td colspan="3" id="I1">
+                        </td>
+                        <td>
+                            <button type="button" onclick="showNextMonth()">
+                                =&gt;
+                            </button>
+                        </td>
+                        <td>
+                            <button type="button" onclick="showNextYear()">
+                                ==&gt;
+                            </button>
+                        </td>
+                    </tr>
+                    <tr align="center">
+                        <td width="30">
+                            Sun
+                        </td>
+                        <td width="30">
+                            Mon
+                        </td>
+                        <td width="30">
+                            Tues
+                        </td>
+                        <td width="30">
+                            Wed
+                        </td>
+                        <td width="30">
+                            Thur
+                        </td>
+                        <td width="30">
+                            Fri
+                        </td>
+                        <td width="30">
+                            Sat
+                        </td>
+                    </tr>
+                    <tr align="center">
+                        <td id="M00">
+                        </td>
+                        <td id="M01">
+                        </td>
+                        <td id="M02">
+                        </td>
+                        <td id="M03">
+                        </td>
+                        <td id="M04">
+                        </td>
+                        <td id="M05">
+                        </td>
+                        <td id="M06">
+                        </td>
+                    </tr>
+                    <tr align="center">
+                        <td id="M10">
+                        </td>
+                        <td id="M11">
+                        </td>
+                        <td id="M12">
+                        </td>
+                        <td id="M13">
+                        </td>
+                        <td id="M14">
+                        </td>
+                        <td id="M15">
+                        </td>
+                        <td id="M16">
+                        </td>
+                    </tr>
+                    <tr align="center">
+                        <td id="M20">
+                        </td>
+                        <td id="M21">
+                        </td>
+                        <td id="M22">
+                        </td>
+                        <td id="M23">
+                        </td>
+                        <td id="M24">
+                        </td>
+                        <td id="M25">
+                        </td>
+                        <td id="M26">
+                        </td>
+                    </tr>
+                    <tr align="center">
+                        <td id="M30">
+                        </td>
+                        <td id="M31">
+                        </td>
+                        <td id="M32">
+                        </td>
+                        <td id="M33">
+                        </td>
+                        <td id="M34">
+                        </td>
+                        <td id="M35">
+                        </td>
+                        <td id="M36">
+                        </td>
+                    </tr>
+                    <tr align="center">
+                        <td id="M40">
+                        </td>
+                        <td id="M41">
+                        </td>
+                        <td id="M42">
+                        </td>
+                        <td id="M43">
+                        </td>
+                        <td id="M44">
+                        </td>
+                        <td id="M45">
+                        </td>
+                        <td id="M46">
+                        </td>
+                    </tr>
+                    <tr align="center">
+                        <td id="M50">
+                        </td>
+                        <td id="M51">
+                        </td>
+                        <td id="M52">
+                        </td>
+                        <td id="M53">
+                        </td>
+                        <td id="M54">
+                        </td>
+                        <td id="M55">
+                        </td>
+                        <td id="M56">
+                        </td>
+                    </tr>
+                </table>
+            </td>
+            <!---  sub table for extra files -->
+            <td valign="top">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </td>
+            <td valign="top">
+                <table id="fileExtra" border="1">
+                </table>
+            </td>
+            <td>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </td>
+            <!---  Table for 'this' file data -->
+            <td valign="top">
+                <table>
+                    <tr>
+                        <td id="FileName">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td id="nMiles">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td id="nEleGain">
+                        </td>
+                    </tr>
+                    <tr>
+                        <!---  town data -->
+                        <td valign="top">
+                            <table id="Towns" class="cssTown">
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+    <hr />
+    <div id="map-canvas"></div>
+    <div id="Div2">xyzzy</div>
+    <form action="">
+    <input type="hidden" id="oldMonth" value="-1" />
+    <input type="hidden" id="oldYear" value="-1" />
+    </form>
+    <hr />
+
+    <script type="text/javascript" language="javascript" src="MapFiles/fileNamesKml.js">
+    </script>
+
+    <script type="text/javascript" language="javascript" src="MapFiles/fileNamesExtra.js">
+    </script>
+
+    <script type="text/javascript">
+    var monthArray = new Array(12);
+    monthArray[0] = "January";
+    monthArray[1] = "February";
+    monthArray[2] = "March";
+    monthArray[3] = "April";
+    monthArray[4] = "May";
+    monthArray[5] = "June";
+    monthArray[6] = "July";
+    monthArray[7] = "August";
+    monthArray[8] = "September";
+    monthArray[9] = "October";
+    monthArray[10] = "November";
+    monthArray[11] = "December";
+
+    var noMonthDays = new Array(12);
+    noMonthDays[0] = 31;
+    noMonthDays[1];
+    noMonthDays[2] = 31;
+    noMonthDays[3] = 30;
+    noMonthDays[4] = 31;
+    noMonthDays[5] = 30;
+    noMonthDays[6] = 31;
+    noMonthDays[7] = 31;
+    noMonthDays[8] = 30;
+    noMonthDays[9] = 31;
+    noMonthDays[10] = 30;
+    noMonthDays[11] = 31;
+     
+    var map;
+    var geoXml;
+    var fileName;
+    var xmlDoc; // = 
+    var miles = 0;
+    var elevation = 0;
+    
+    var sizeMap = 600;  // started here
+
+
+// Start of xmldoc stuff
+// code from http://articles.sitepoint.com/article/server-side-xml-javascript
+function loadXML(xmlFile) 
+{ 
+/*
+ xmlObj=xmlDoc.documentElement; 
+ 
+ // if failed look at xmlDoc.parseError.reason.
+ 
+ */
+    if(document.implementation && document.implementation.createDocument) 
+    {
+        // try this for chrome
+        var xmlDocA= new XMLHttpRequest(); 
+        xmlDocA.open("GET",xmlFile,false); 
+        xmlDocA.send(null); 
+        xmlDoc = xmlDocA.responseXML.documentElement; 
+    }
+    else if (typeof window.ActiveXObject != 'undefined')
+    {
+        xmlDoc = new ActiveXObject("Microsoft.XMLDOM"); 
+        xmlDoc.async="false"; 
+        xmlDoc.onreadystatechange=verify; 
+        xmlDoc.load(xmlFile); 
+    }
+}
+
+function verify() 
+{ 
+ // 0 Object is not initialized 
+ // 1 Loading object is loading data 
+ // 2 Loaded object has loaded data 
+ // 3 Data from object can be worked with 
+ // 4 Object completely initialized 
+ if (xmlDoc.readyState != 4) 
+ { 
+   return false; 
+ } 
+ return true;
+}
+
+// use existing xmlObj to fill out data fields
+function FillTables(actualPath)
+{
+    // find the extendedData tag.
+    nodeExtended = xmlDoc.getElementsByTagName("ExtendedData")[0];
+
+    if (nodeExtended != null) // && nodeExtended.childElementCount > 0)
+    {
+        miles = nodeExtended.getElementsByTagName("value")[0].firstChild.nodeValue;
+        document.getElementById("nMiles").innerHTML = miles + ' miles';
+        elevation = nodeExtended.getElementsByTagName("value")[1].firstChild.nodeValue;
+        document.getElementById("nEleGain").innerHTML = elevation + ' feet climbed';
+    }
+    else
+    {
+        document.getElementById("nMiles").innerHTML = "unknown";
+        document.getElementById("nEleGain").innerHTML = "unknown";
+    }
+    document.getElementById("Earth").innerHTML = "<a href='" + actualPath + "'>Open in Google Earth<\/a>";
+
+    townTable = document.getElementById("Towns");
+    while (townTable.rows.length > 0)
+    {
+        townTable.deleteRow(0);
+    }
+    tblIndex = 0;
+    
+    // make a blank row
+    x = townTable.insertRow(tblIndex++);
+    // add an informal header
+    x = townTable.insertRow(tblIndex++);
+    var y = x.insertCell(0);
+    y.innerHTML = "Towns for this route";
+
+    nodeTown = xmlDoc.getElementsByTagName("Towns")[0];
+    if (nodeTown != null && nodeTown.hasChildNodes())
+    {
+        thisTown = nodeTown.firstChild;
+        while (thisTown != null)
+        {
+            x = townTable.insertRow(tblIndex++);
+            var y = x.insertCell(0);
+            y.innerHTML = thisTown.firstChild.nodeValue;
+            thisTown = thisTown.nextSibling;
+        }
+        
+    }
+
+}
+// end of xmldoc stuff
+
+
+
+
+function showCurrentMonth()
+{
+    today = new Date();
+    thisMonth = today.getMonth();
+    thisYear = today.getFullYear();
+    showMonth();
+}
+
+function showPrevMonth(myWord)
+{
+    thisMonth = document.getElementById("oldMonth").value;
+    thisYear = document.getElementById("oldYear").value;
+
+    if (thisMonth == 0)
+    {
+        thisMonth = 11;
+        thisYear -= 1;
+    }
+    else
+    {
+        thisMonth -= 1;
+    }
+    showMonth();
+}
+
+function showNextMonth()
+{
+    thisMonth = document.getElementById("oldMonth").value;
+    thisYear = document.getElementById("oldYear").value;
+
+    if (thisMonth == 11)
+    {
+        thisMonth = 0;
+        thisYear -= -1;
+    }
+    else
+    {
+        thisMonth -= -1;
+    }
+    showMonth();
+}
+
+function showPrevYear()
+{
+    thisYear = document.getElementById("oldYear").value - 1;
+    showMonth();
+}
+
+function showNextYear()
+{
+    thisYear = document.getElementById("oldYear").value - (-1);
+    showMonth();
+}
+
+function showMonth()
+{
+    document.getElementById("oldMonth").value = thisMonth;
+    document.getElementById("oldYear").value = thisYear;
+    
+    //declare function variables and assign them.
+    document.getElementById('I1').innerHTML = monthArray[thisMonth] + "  " + thisYear;
+
+    //we get the start day of the month
+    var startDate = new Date(thisYear, thisMonth, 1)
+    var startMonthDay = startDate.getDay();
+    var realStartDay = startMonthDay;
+
+    var monthDayNo = 1;
+
+    var tdID; //table ID
+
+    //fill in the date numbers.
+    readyToStop = false;
+    for (i=0;i<=5 && (! readyToStop);i++)
+    {
+        for (j=startMonthDay;j<=6;j++)
+        {
+            //create the ID for table cell of the start date
+            tdID = "M" + i + j;
+            document.getElementById(tdID).style.backgroundColor = "#FFFFFF";
+            if (validateDate(thisYear, thisMonth, monthDayNo))
+            {
+                fileName = thisYear + "_" + (thisMonth+1) + "_" + monthDayNo + ".kml";
+                if (-1 != (xyz = fileExists(fileName)))
+                {
+                    document.getElementById(tdID).style.backgroundColor = "#C0C0C0";
+                    callMe = "javascript:showTestMap('" + fileName + "')";
+//                    callMe = "javascript:showTestMap('2014_5_17.kml')";
+                    hoverMe = 'title="' + mileHoverKML[xyz] + '"  HREF="';
+                    document.getElementById(tdID).innerHTML = '<A ' + hoverMe + callMe + '">' + monthDayNo + "<\/a>";    
+                }
+                else
+                {
+                    document.getElementById(tdID).innerHTML = monthDayNo;
+                }
+
+            }
+            else
+            {
+                document.getElementById(tdID).innerHTML = "&nbsp;<br>&nbsp;";
+                document.getElementById(tdID).style.backgroundColor = "#FFFFFF";
+            }
+            //increment the monthDayNo
+            monthDayNo+=1;
+        }
+        //set the startMonthDay to 0 after first line
+        startMonthDay = 0;
+    }
+
+    //fill in the empty table cells with '&nbsp;' at the beginning of the month;
+    for (k=0;k<realStartDay;k++)
+    {
+        tdID = "M" + "0" + k;
+        document.getElementById(tdID).innerHTML = "&nbsp;";
+        document.getElementById(tdID).style.backgroundColor = "#FFFFFF";
+    }
+    
+    
+    //  NOW - put the extra files on the page
+    tblIndex = 0;
+    
+    thisTable = document.getElementById("fileExtra");
+    while (thisTable.rows.length > 0)
+    {
+        thisTable.deleteRow(0);
+    }
+    for (xxx = 0 ; xxx < filesExtra.length ; xxx++)
+    {
+        values = filesExtra[xxx].split("_");
+        if (values[0] == thisYear && values[1] == thisMonth+1)
+        {
+            x = thisTable.insertRow(tblIndex++);
+            var y = x.insertCell(0);
+
+            callMe = "javascript:showTestMap('" + filesExtra[xxx] + "')";
+            hoverMe = 'title="' + mileHoverExtra[xxx] + '"  HREF="';
+            y.innerHTML = '<A ' + hoverMe + callMe + '">' + filesExtra[xxx] + "<\/a>";    
+        }
+    }
+}         
+
+function fileExists(fileDate)
+{
+    for (m = 0 ; m < filesKML.length ; m++)
+    {
+        if (filesKML[m] == fileDate)
+            return m;
+    }
+    return -1;
+}
+
+function validateDate(year, month, day)
+{
+    if ((year%4)!=0)
+        noMonthDays[1] = 28;
+    else if ((year%400)==0)
+        noMonthDays[1] = 29;
+    else if ((year%100)==0)
+        noMonthDays[1] = 28;
+    else
+        noMonthDays[1] = 29;
+    if ((year.toString().length == 4) && (day <= noMonthDays[month]) && (day >= 1))
+        return true;
+    else
+        return false;
+}
+
+
+</script>
+
+</body>
+<!--  alicefrank ABQIAAAA7ISq2qbIFFXFRvGdko5AZhRKFTnAb4ZLNUzmaKGv3chuE-CPxRSYYkH3ta_UWJci6tTka-XpUIlsjg -->
+<!-- localhost ABQIAAAA7ISq2qbIFFXFRvGdko5AZhT2yXp_ZAY8_ufC3CFXhHIE1NvwkxSHm0G1u9SKJlkGADu7CIHoRxZTiQ -->
+</html>
